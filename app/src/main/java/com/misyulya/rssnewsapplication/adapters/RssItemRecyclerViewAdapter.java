@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecyclerViewAdapter.ViewHolder> {
 
+    private String superField;
     private final LongClickWithPosition mLongClick;
     private ArrayList<RssItem> mRssItems;
     private SparseBooleanArray mSelectedItems;
