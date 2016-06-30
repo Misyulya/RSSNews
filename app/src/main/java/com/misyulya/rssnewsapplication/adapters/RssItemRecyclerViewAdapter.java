@@ -23,14 +23,14 @@ import java.util.List;
 public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecyclerViewAdapter.ViewHolder> {
 
     private String superField;
-    private final LongClickWithPosition mLongClick;
+    private final ClickWithPosition mClickWithPosition;
     private ArrayList<RssItem> mRssItems;
     private SparseBooleanArray mSelectedItems;
 
 
-    public RssItemRecyclerViewAdapter(Collection<RssItem> rssItems, LongClickWithPosition longClick) {
+    public RssItemRecyclerViewAdapter(Collection<RssItem> rssItems, ClickWithPosition longClick) {
         mRssItems = (ArrayList<RssItem>) rssItems;
-        mLongClick = longClick;
+        mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
     }
 
@@ -81,7 +81,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         return mRssItems.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
 
         private final TextView mTitleTextView;
         private final TextView mDescriptionTextView;
@@ -97,6 +97,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
             mDescriptionTextView = (TextView) itemView.findViewById(R.id.description_textView);
             mImage = (ImageView) itemView.findViewById(R.id.image_view);
             itemView.setOnLongClickListener(this);
+            itemView.setOnClickListener(this);
         }
 
         public void setContent(RssItem rssItem, boolean isSelected) {
@@ -110,8 +111,13 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
         @Override
         public boolean onLongClick(View v) {
-            mLongClick.onLongClickWithPosition(mRssItems.get(getLayoutPosition()), getLayoutPosition());
+            mClickWithPosition.onLongClickWithPosition(mRssItems.get(getLayoutPosition()), getLayoutPosition());
             return true;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mClickWithPosition.onClickWithPosition(mRssItems.get(getLayoutPosition()), getLayoutPosition());
         }
     }
 
