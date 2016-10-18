@@ -109,4 +109,12 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (mActionMode != null) {
+            mAdapter.clearSelections();
+            mActionMode.finish();
+        }
+    }
 }
