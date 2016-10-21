@@ -22,11 +22,11 @@ import java.util.List;
  */
 public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecyclerViewAdapter.ViewHolder> {
 
-    private String superField;
     private final ClickWithPosition mClickWithPosition;
     private ArrayList<RssItem> mRssItems;
     private SparseBooleanArray mSelectedItems;
-
+    private View mRssItem;
+    private int mItemBackgroundColor = R.color.colorWhite;
 
     public RssItemRecyclerViewAdapter(Collection<RssItem> rssItems, ClickWithPosition longClick) {
         mRssItems = (ArrayList<RssItem>) rssItems;
@@ -41,6 +41,10 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
             mSelectedItems.put(pos, true);
         }
         notifyItemChanged(pos);
+    }
+
+    public void changeBackgroundItemColor(int itemBackgroundColor){
+        this.mItemBackgroundColor = itemBackgroundColor;
     }
 
     public void clearSelections() {
@@ -61,11 +65,10 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         return items;
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rssItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
-        ViewHolder holder = new ViewHolder(rssItem);
+        mRssItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
+        ViewHolder holder = new ViewHolder(mRssItem);
         return holder;
     }
 
@@ -75,20 +78,18 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         holder.setContent(rssItem, mSelectedItems.get(position));
     }
 
-
     @Override
     public int getItemCount() {
         return mRssItems.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
-
         private final TextView mTitleTextView;
         private final TextView mDescriptionTextView;
         private final ImageView mImage;
         private final String IMAGE_URI = "http://pics04.loveplanet.ru/7/foto/63/27/63275bed/eCHNXDEIoHlMHaBZSCA==_.jpg?p=s_";
-        private final View mItemView;
 
+        private final View mItemView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -101,11 +102,11 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         }
 
         public void setContent(RssItem rssItem, boolean isSelected) {
-            mTitleTextView.setText(rssItem.getmTitle());
+            mTitleTextView.setText(rssItem.getTitle());
             mDescriptionTextView.setText(rssItem.getmDescription());
             ImageLoader.getInstance().displayImage(IMAGE_URI, mImage);
             mItemView.setBackgroundColor(ContextCompat.getColor(mItemView.getContext(),
-                    isSelected ? R.color.colorPrimaryDark : R.color.colorWhite));
+                    isSelected ? R.color.colorPrimary : mItemBackgroundColor));
         }
 
 
@@ -120,5 +121,4 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
             mClickWithPosition.onClickWithPosition(mRssItems.get(getLayoutPosition()), getLayoutPosition());
         }
     }
-
 }

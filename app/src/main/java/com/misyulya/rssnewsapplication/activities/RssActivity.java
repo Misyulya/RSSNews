@@ -38,6 +38,8 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = RssActivity.this.getMenuInflater();
             inflater.inflate(R.menu.action_mode_menu, menu);
+            mAdapter.changeBackgroundItemColor(R.color.colorLightGray);
+            mAdapter.notifyDataSetChanged();
             return true;
         }
 
@@ -48,15 +50,23 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
+            switch (item.getItemId()) {
+                case R.id.delete_button:
+                    Toast.makeText(RssActivity.this, "Delete pressed", Toast.LENGTH_SHORT).show();
+                    mActionMode.finish();
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            mAdapter.changeBackgroundItemColor(R.color.colorWhite);
+            mAdapter.clearSelections();
             mActionMode = null;
         }
     };
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,19 +79,16 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    private void initView() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+    }
 
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         mRefreshButton = (Button) toolbar.findViewById(R.id.refresh_button);
         mRefreshButton.setOnClickListener(this);
-
-    }
-
-    private void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-
     }
 
     @Override
@@ -93,10 +100,12 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     public void onLongClickWithPosition(RssItem item, int itemPosition) {
         if (mActionMode == null) {
             mActionMode = mToolbar.startActionMode(mCallback);
-            mAdapter.toggleSelection(itemPosition);
-        }
 
-        Toast.makeText(this, item.getmTitle(), Toast.LENGTH_SHORT).show();
+        }
+        mAdapter.toggleSelection(itemPosition);
+        if (mAdapter.getSelectedItemCount() == 0) {
+            mActionMode.finish();
+        }
     }
 
     @Override
@@ -106,15 +115,6 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
             if (mAdapter.getSelectedItemCount() == 0) {
                 mActionMode.finish();
             }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (mActionMode != null) {
-            mAdapter.clearSelections();
-            mActionMode.finish();
         }
     }
 }

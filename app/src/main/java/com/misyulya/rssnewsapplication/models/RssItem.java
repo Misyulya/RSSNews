@@ -19,7 +19,7 @@ public class RssItem implements Serializable{
         this.mDescription = description;
     }
 
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
