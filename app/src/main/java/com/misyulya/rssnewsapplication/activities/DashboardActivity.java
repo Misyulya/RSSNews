@@ -27,25 +27,7 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     private Toolbar mToolbar;
     private ArrayList<RssItem> mRssItems;
     public static final String INTENT_INFORMATION = "intent information";
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                String string = bundle.getString(DownloadService.FILEPATH);
-                int resultCode = bundle.getInt(DownloadService.RESULT);
-                if (resultCode == RESULT_OK) {
-                    Toast.makeText(DashboardActivity.this,
-                            "Download complete. Download URI: " + string,
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(DashboardActivity.this, "Download failed",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +63,6 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.restoreButton:
 //                Toast.makeText(this, "Restore button pressed", Toast.LENGTH_SHORT).show();
-                Intent intent1 = new Intent(this, DownloadService.class);
-                // add infos for the service which file to download and where to store
-                intent1.putExtra(DownloadService.FILENAME, "index.html");
-                intent1.putExtra(DownloadService.URL,
-                        "http://www.vogella.com/index.html");
-                startService(intent1);
                 break;
             case R.id.exitButton:
                 Toast.makeText(this, "Exit button pressed", Toast.LENGTH_SHORT).show();
@@ -97,15 +73,14 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mReceiver);
+
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mReceiver, new IntentFilter(
-                DownloadService.NOTIFICATION));
+
     }
 
     private void prepareData() {

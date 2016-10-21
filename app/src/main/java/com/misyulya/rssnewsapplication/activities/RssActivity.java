@@ -1,5 +1,9 @@
 package com.misyulya.rssnewsapplication.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +23,7 @@ import com.misyulya.rssnewsapplication.adapters.ClickWithPosition;
 import com.misyulya.rssnewsapplication.adapters.RssItemRecyclerViewAdapter;
 import com.misyulya.rssnewsapplication.business.RssBusiness;
 import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.services.DownloadService;
 
 import java.util.ArrayList;
 
@@ -33,6 +38,45 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     private Button mRefreshButton;
     private Toolbar mToolbar;
     private ActionMode mActionMode;
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                if (intent.getAction() == DownloadService.NOTIFICATION_START) {
+                    String message = bundle.getString(DownloadService.MESSAGE);
+                    Toast.makeText(RssActivity.this, "Сервис запущен", Toast.LENGTH_SHORT).show();
+                } else if (intent.getAction() == DownloadService.NOTIFICATION_END) {
+                    String string = bundle.getString(DownloadService.FILEPATH);
+                    int resultCode = bundle.getInt(DownloadService.RESULT);
+                    if (resultCode == RESULT_OK) {
+                        Toast.makeText(RssActivity.this,
+                                "Download complete. Download URI: " + string,
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(RssActivity.this, "Download failed",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+    };
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_START));
+        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_END));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
+    }
+
     private android.view.ActionMode.Callback mCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -93,7 +137,13 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "refresh button pressed", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, DownloadService.class);
+        // add information for the service which file to download and where to store
+        intent.putExtra(DownloadService.FILENAME, "index.html");
+        intent.putExtra(DownloadService.URL,
+                "http://www.vogella.com/index.html");
+        startService(intent);
+//        Toast.makeText(this, "refresh button pressed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -117,4 +167,5 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
             }
         }
     }
+
 }

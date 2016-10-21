@@ -25,7 +25,9 @@ public class DownloadService extends IntentService {
     public static final String FILENAME = "filename";
     public static final String FILEPATH = "filepath";
     public static final String RESULT = "result";
-    public static final String NOTIFICATION = "com.vogella.android.service.receiver";
+    public static final String NOTIFICATION_START = "com.xample.DownloadService.notificationStart";
+    public static final String NOTIFICATION_END = "com.xample.DownloadService.notificationEnd";
+    public static final String MESSAGE = "com.example.DownloadService.message";
 
     public DownloadService() {
         super("DownloadService");
@@ -34,6 +36,8 @@ public class DownloadService extends IntentService {
     // will be called asynchronously by Android
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        serviceIsRunning();
         String response = "exception occurs";
         try {
             response = new RssBusiness().getRssResponseString();
@@ -44,8 +48,15 @@ public class DownloadService extends IntentService {
         publishResults(response, result);
     }
 
+    private void serviceIsRunning() {
+        Intent intent = new Intent(NOTIFICATION_START);
+        intent.putExtra(MESSAGE, "Сервис обновления в процессе");
+        sendBroadcast(intent);
+
+    }
+
     private void publishResults(String outputPath, int result) {
-        Intent intent = new Intent(NOTIFICATION);
+        Intent intent = new Intent(NOTIFICATION_END);
         intent.putExtra(FILEPATH, outputPath);
         intent.putExtra(RESULT, result);
         sendBroadcast(intent);
