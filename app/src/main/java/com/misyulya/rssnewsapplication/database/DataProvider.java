@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.database.tables.RssTable;
-import com.misyulya.rssnewsapplication.models.Rss;
 import com.misyulya.rssnewsapplication.models.RssItem;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class DataProvider {
             do {
                 rssItem.setId(c.getInt(idColIndex));
                 rssItem.setTitle(c.getString(titleColIndex));
-                rssItem.setDescription(c.getString(descriptionColIndex));
+                rssItem.setLink(c.getString(descriptionColIndex));
                 rssList.add(rssItem);
             } while (c.moveToNext());
         } else {

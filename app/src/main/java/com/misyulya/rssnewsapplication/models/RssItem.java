@@ -1,6 +1,5 @@
 package com.misyulya.rssnewsapplication.models;
 
-import android.os.Parcelable;
 import android.widget.ImageView;
 
 import com.google.gson.annotations.SerializedName;
@@ -12,18 +11,18 @@ import java.io.Serializable;
  */
 public class RssItem implements Serializable {
 
-    @SerializedName("title")
+    @SerializedName("nameRU")
     private String mTitle;
 
-    @SerializedName("description")
-    private String mDescription;
+    @SerializedName("genre")
+    private String mLink;
 
     private int mId;
     private ImageView mImage;
 
 //    public RssItem(String title, String description) {
 //        this.mTitle = title;
-//        this.mDescription = description;
+//        this.mLink = description;
 //    }
 
     public void setTitle(String title) {
@@ -34,12 +33,12 @@ public class RssItem implements Serializable {
         return mTitle;
     }
 
-    public void setDescription(String description) {
-        this.mDescription = description;
+    public void setLink(String link) {
+        this.mLink = link;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getLink() {
+        return mLink;
     }
 
     public void setId(int id) {

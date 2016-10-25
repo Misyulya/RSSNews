@@ -66,19 +66,6 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
 //    private void prepareData() {
 //        mRssItems = new ArrayList<>();
 //        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
@@ -92,6 +79,5 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
 //        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
 //        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
 //    }
-
 
 }

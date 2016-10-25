@@ -34,21 +34,21 @@ public class DownloadService extends IntentService {
         super(SERVICE_NAME);
     }
 
-    // will be called asynchronously by Android
+//     will be called asynchronously by Android
     @Override
     protected void onHandleIntent(Intent intent) {
 
         serviceIsRunning();
         String response = "Сервис обновления завершен";
-        try {
-            response = new RssBusiness().getRssResponseString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            response += " с ошибкой " + e.getMessage();
+//        try {
+//            response = new RssBusiness().getRssResponseString();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            response += " с ошибкой " + e.getMessage();
             result = Activity.RESULT_CANCELED;
-        }
+//        }
 
-        publishResults(response, result);
+//        publishResults(response, result);
     }
 
     private void serviceIsRunning() {

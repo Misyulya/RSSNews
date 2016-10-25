@@ -23,13 +23,13 @@ import java.util.List;
 public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecyclerViewAdapter.ViewHolder> {
 
     private final ClickWithPosition mClickWithPosition;
-    private ArrayList<RssItem> mRssItems;
+    private List<RssItem> mRssItems;
     private SparseBooleanArray mSelectedItems;
     private View mRssItem;
     private int mItemBackgroundColor = R.color.colorWhite;
 
     public RssItemRecyclerViewAdapter(Collection<RssItem> rssItems, ClickWithPosition longClick) {
-        mRssItems = (ArrayList<RssItem>) rssItems;
+        mRssItems = (List<RssItem>) rssItems;
         mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
     }
@@ -85,7 +85,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
         private final TextView mTitleTextView;
-        private final TextView mDescriptionTextView;
+        private final TextView mLinkTextView;
         private final ImageView mImage;
         private final String IMAGE_URI = "http://pics04.loveplanet.ru/7/foto/63/27/63275bed/eCHNXDEIoHlMHaBZSCA==_.jpg?p=s_";
 
@@ -95,7 +95,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
             super(itemView);
             mItemView = itemView;
             mTitleTextView = (TextView) itemView.findViewById(R.id.title_textView);
-            mDescriptionTextView = (TextView) itemView.findViewById(R.id.description_textView);
+            mLinkTextView = (TextView) itemView.findViewById(R.id.description_textView);
             mImage = (ImageView) itemView.findViewById(R.id.image_view);
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
@@ -103,7 +103,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
         public void setContent(RssItem rssItem, boolean isSelected) {
             mTitleTextView.setText(rssItem.getTitle());
-            mDescriptionTextView.setText(rssItem.getDescription());
+            mLinkTextView.setText(rssItem.getLink());
             ImageLoader.getInstance().displayImage(IMAGE_URI, mImage);
             mItemView.setBackgroundColor(ContextCompat.getColor(mItemView.getContext(),
                     isSelected ? R.color.colorPrimary : mItemBackgroundColor));

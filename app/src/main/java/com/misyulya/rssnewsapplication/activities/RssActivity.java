@@ -1,5 +1,6 @@
 package com.misyulya.rssnewsapplication.activities;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.R;
@@ -38,12 +40,16 @@ import retrofit2.Response;
  */
 public class RssActivity extends AppCompatActivity implements View.OnClickListener, ClickWithPosition {
 
+    private ProgressBar mProgressBar;
     private RecyclerView mRecyclerView;
     private RssItemRecyclerViewAdapter mAdapter;
     private List<RssItem> mRssItems;
     private Button mRefreshButton;
     private Toolbar mToolbar;
     private ActionMode mActionMode;
+    private RssBusiness mRssBusiness;
+
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -53,6 +59,7 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
                 if (intent.getAction() == DownloadService.NOTIFICATION_START) {
                     String message = bundle.getString(DownloadService.MESSAGE);
                     Toast.makeText(RssActivity.this, "Сервис запущен", Toast.LENGTH_SHORT).show();
+                    mProgressBar.setEnabled(true);
                 } else if (intent.getAction() == DownloadService.NOTIFICATION_END) {
                     String string = bundle.getString(DownloadService.FILEPATH);
                     int resultCode = bundle.getInt(DownloadService.RESULT);
@@ -64,11 +71,11 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
                         Toast.makeText(RssActivity.this, "Download failed",
                                 Toast.LENGTH_SHORT).show();
                     }
+                    mProgressBar.setEnabled(false);
                 }
             }
         }
     };
-
 
     private android.view.ActionMode.Callback mCallback = new ActionMode.Callback() {
         @Override
@@ -111,15 +118,18 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.rss_activity);
         initView();
         initToolbar(mToolbar);
-
+        mRssBusiness = new RssBusiness(this);
+        updateInformation();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RssItemRecyclerViewAdapter(new RssBusiness(this).getRss(), this);
+        mAdapter = new RssItemRecyclerViewAdapter(mRssBusiness.getRss(), this);
         mRecyclerView.setAdapter(mAdapter);
+
     }
 
     private void initView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     }
 
     private void initToolbar(Toolbar toolbar) {
@@ -166,11 +176,11 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
                 mRssItems = response.body().getRssData();
+                mRssBusiness.setRss(mRssItems);
+                mProgressBar.setEnabled(false);
             }
-
             @Override
             public void onFailure(Call<RssResponse> call, Throwable t) {
-
             }
         });
     }
