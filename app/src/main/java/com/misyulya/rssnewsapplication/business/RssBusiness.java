@@ -42,6 +42,10 @@ public class RssBusiness {
         return rssItemsList;
     }
 
+    public void setRss(List<RssItem> rssItems){
+        mDataProvider.setRss(rssItems);
+    }
+
     public void delete(RssItem item) {
         mDataProvider.removeRss(item);
     }

@@ -14,7 +14,4 @@ import retrofit2.http.GET;
 public interface ApiInterface {
     @GET(ApiRss.RSS)
     Call<RssResponse> getRSS();
-//
-//    @GET(ApiFilms.DETAILS)
-//    Call<Review> getReviewDescription(@Path("reviewID") int id);
 }

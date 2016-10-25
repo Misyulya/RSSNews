@@ -2,7 +2,7 @@ package com.misyulya.rssnewsapplication.database.tables;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import com.misyulya.rssnewsapplication.models.Rss;
+
 import com.misyulya.rssnewsapplication.models.RssItem;
 
 /**
@@ -33,7 +33,7 @@ public class RssTable {
     public static ContentValues createContentValues(RssItem rss) {
         ContentValues cv = new ContentValues();
         cv.put(TITLE, rss.getTitle());
-        cv.put(DESCRIPTION, rss.getDescription());
+        cv.put(DESCRIPTION, rss.getLink());
         return cv;
     }
 

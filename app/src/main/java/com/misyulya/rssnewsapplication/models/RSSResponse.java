@@ -2,7 +2,6 @@ package com.misyulya.rssnewsapplication.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,10 +9,10 @@ import java.util.List;
  */
 public class RssResponse {
 
-    @SerializedName("RssData")
-    private List<RssItem> mRssData;
+    @SerializedName("filmsData")
+    private List<RssItem> rssItems;
 
     public List<RssItem> getRssData() {
-        return mRssData;
+        return rssItems;
     }
 }
