@@ -23,9 +23,15 @@ import com.misyulya.rssnewsapplication.adapters.ClickWithPosition;
 import com.misyulya.rssnewsapplication.adapters.RssItemRecyclerViewAdapter;
 import com.misyulya.rssnewsapplication.business.RssBusiness;
 import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.models.RssResponse;
+import com.misyulya.rssnewsapplication.rest.RestFactory;
 import com.misyulya.rssnewsapplication.services.DownloadService;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by 1 on 30.05.2016.
@@ -34,7 +40,7 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
 
     private RecyclerView mRecyclerView;
     private RssItemRecyclerViewAdapter mAdapter;
-    private ArrayList<RssItem> mRssItems;
+    private List<RssItem> mRssItems;
     private Button mRefreshButton;
     private Toolbar mToolbar;
     private ActionMode mActionMode;
@@ -63,19 +69,6 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         }
     };
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_START));
-        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_END));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(mReceiver);
-    }
 
     private android.view.ActionMode.Callback mCallback = new ActionMode.Callback() {
         @Override
@@ -118,8 +111,9 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.rss_activity);
         initView();
         initToolbar(mToolbar);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RssItemRecyclerViewAdapter(new RssBusiness().getRss(), this);
+        mAdapter = new RssItemRecyclerViewAdapter(new RssBusiness(this).getRss(), this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -143,14 +137,12 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         intent.putExtra(DownloadService.URL,
                 "http://www.vogella.com/index.html");
         startService(intent);
-//        Toast.makeText(this, "refresh button pressed", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onLongClickWithPosition(RssItem item, int itemPosition) {
         if (mActionMode == null) {
             mActionMode = mToolbar.startActionMode(mCallback);
-
         }
         mAdapter.toggleSelection(itemPosition);
         if (mAdapter.getSelectedItemCount() == 0) {
@@ -168,4 +160,31 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    public void updateInformation() {
+        Call<RssResponse> call = RestFactory.get().getRSS();
+        call.enqueue(new Callback<RssResponse>() {
+            @Override
+            public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
+                mRssItems = response.body().getRssData();
+            }
+
+            @Override
+            public void onFailure(Call<RssResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_START));
+        registerReceiver(mReceiver, new IntentFilter(DownloadService.NOTIFICATION_END));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mReceiver);
+    }
 }

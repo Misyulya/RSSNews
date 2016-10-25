@@ -25,12 +25,13 @@ public class DownloadService extends IntentService {
     public static final String FILENAME = "filename";
     public static final String FILEPATH = "filepath";
     public static final String RESULT = "result";
-    public static final String NOTIFICATION_START = "com.xample.DownloadService.notificationStart";
-    public static final String NOTIFICATION_END = "com.xample.DownloadService.notificationEnd";
+    public static final String NOTIFICATION_START = "com.example.DownloadService.notificationStart";
+    public static final String NOTIFICATION_END = "com.example.DownloadService.notificationEnd";
     public static final String MESSAGE = "com.example.DownloadService.message";
+    public static final String SERVICE_NAME = "DownloadService";
 
     public DownloadService() {
-        super("DownloadService");
+        super(SERVICE_NAME);
     }
 
     // will be called asynchronously by Android
@@ -38,11 +39,13 @@ public class DownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         serviceIsRunning();
-        String response = "exception occurs";
+        String response = "Сервис обновления завершен";
         try {
             response = new RssBusiness().getRssResponseString();
         } catch (IOException e) {
             e.printStackTrace();
+            response += " с ошибкой " + e.getMessage();
+            result = Activity.RESULT_CANCELED;
         }
 
         publishResults(response, result);

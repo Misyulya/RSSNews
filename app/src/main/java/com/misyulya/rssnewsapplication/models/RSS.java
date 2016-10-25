@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by 1 on 30.06.2016.
  */
 
-public class RSS {
+public class Rss {
 
     @SerializedName("title")
     private String title;
@@ -16,6 +16,19 @@ public class RSS {
 
     @SerializedName("description")
     private String description;
+
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getTitle() {
         return title;

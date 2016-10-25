@@ -25,8 +25,6 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     private Button mExitButton;
     private Button mRefreshButton;
     private Toolbar mToolbar;
-    private ArrayList<RssItem> mRssItems;
-    public static final String INTENT_INFORMATION = "intent information";
 
 
     @Override
@@ -34,7 +32,6 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         initView();
-        prepareData();
     }
 
 
@@ -53,19 +50,18 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rssButton:
-                Toast.makeText(this, "RSS button pressed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Rss button pressed", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, RssActivity.class);
-                intent.putExtra(INTENT_INFORMATION, mRssItems);
                 startActivity(intent);
                 break;
             case R.id.backupButton:
                 Toast.makeText(this, "Backup button pressed", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.restoreButton:
-//                Toast.makeText(this, "Restore button pressed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Restore button pressed", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.exitButton:
-                Toast.makeText(this, "Exit button pressed", Toast.LENGTH_SHORT).show();
+                onBackPressed();
                 break;
         }
     }
@@ -83,19 +79,19 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    private void prepareData() {
-        mRssItems = new ArrayList<>();
-        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
-        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
-        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-    }
+//    private void prepareData() {
+//        mRssItems = new ArrayList<>();
+//        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
+//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
+//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
+//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
+//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
+//        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
+//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
+//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
+//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
+//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
+//    }
 
 
 }

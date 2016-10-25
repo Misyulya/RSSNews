@@ -103,7 +103,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
         public void setContent(RssItem rssItem, boolean isSelected) {
             mTitleTextView.setText(rssItem.getTitle());
-            mDescriptionTextView.setText(rssItem.getmDescription());
+            mDescriptionTextView.setText(rssItem.getDescription());
             ImageLoader.getInstance().displayImage(IMAGE_URI, mImage);
             mItemView.setBackgroundColor(ContextCompat.getColor(mItemView.getContext(),
                     isSelected ? R.color.colorPrimary : mItemBackgroundColor));
