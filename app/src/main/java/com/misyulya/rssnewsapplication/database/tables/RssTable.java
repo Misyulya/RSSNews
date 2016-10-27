@@ -9,16 +9,17 @@ import com.misyulya.rssnewsapplication.model.RssItem;
  * Created by 1 on 31.03.2016.
  */
 public class RssTable {
-    public static final String TABLE_NAME = "Rss_item_table";
+    public static final String TABLE_NAME = "RssItemTable";
+    public static final String TEXT_TYPE = " text";
+
     public static final String ID = "_id";
     public static final String TITLE = "title";
     public static final String GENRE = "genre";
-    public static final String POSTER_URL = "poster URL";
+    public static final String POSTER_URL = "poster";
     private static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     private static final String CREATE_TABLE = "create table " + TABLE_NAME + "(" + ID + " integer primary " +
-            "key autoincrement, " + TITLE + " text, " + GENRE + " text, " + POSTER_URL + "text);";
-
+            "key autoincrement, " + TITLE + TEXT_TYPE + ", " + GENRE + TEXT_TYPE + ", " + POSTER_URL + TEXT_TYPE + ");";
 
 
     public static void createDataBase(SQLiteDatabase db) {

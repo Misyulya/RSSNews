@@ -125,7 +125,7 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RssItemRecyclerViewAdapter(this);
+        mAdapter = new RssItemRecyclerViewAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -165,22 +165,23 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     public void updateInformation() {
-        Call<RssResponse> call = RestFactory.get().getRSS();
-        mProgressBar.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<RssResponse>() {
-            @Override
-            public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
-                List<RssItem> rssItems = response.body().getRssData();
-                mRssBusiness.saveRssToDB(rssItems);
-                mAdapter.setRssItemList(rssItems);
-                mProgressBar.setVisibility(View.GONE);
-            }
+        List<RssItem> rssItems = mRssBusiness.getRss();
+        if (rssItems.isEmpty()) {
+            mRssBusiness.requestRss(new Callback<RssResponse>() {
+                @Override
+                public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
+                    List<RssItem> rssItems = response.body().getRssData();
+                    mAdapter.setRssItemList(rssItems);
+                }
 
-            @Override
-            public void onFailure(Call<RssResponse> call, Throwable t) {
-                mProgressBar.setVisibility(View.GONE);
-            }
-        });
+                @Override
+                public void onFailure(Call<RssResponse> call, Throwable t) {
+                }
+            });
+        } else {
+//            TODO Problems with the Threads
+            mAdapter.setRssItemList(rssItems);
+        }
     }
 
     @Override

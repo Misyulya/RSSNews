@@ -1,5 +1,6 @@
 package com.misyulya.rssnewsapplication.adapter;
 
+import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.misyulya.rssnewsapplication.R;
+import com.misyulya.rssnewsapplication.business.RssBusiness;
 import com.misyulya.rssnewsapplication.model.RssItem;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -26,11 +28,13 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     private SparseBooleanArray mSelectedItems;
     private View mRssItem;
     private int mItemBackgroundColor = R.color.colorWhite;
+    private RssBusiness mRssBusiness;
 
-    public RssItemRecyclerViewAdapter(ClickWithPosition longClick) {
+    public RssItemRecyclerViewAdapter(Context context, ClickWithPosition longClick) {
         mRssItems = new ArrayList<>();
         mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
+        mRssBusiness = new RssBusiness(context);
     }
 
     public void toggleSelection(int pos) {
@@ -62,7 +66,9 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         List<RssItem> removeItems = new ArrayList<>();
         for (int i = 0, j = selectedItems.size() - 1; i < selectedItems.size(); i++) {
             int position = selectedItems.get(i);
-            removeItems.add(mRssItems.get(position));
+            RssItem item = mRssItems.get(position);
+            removeItems.add(item);
+            mRssBusiness.delete(item);
         }
         mRssItems.removeAll(removeItems);
         for (int i = 0; i < selectedItems.size(); i++) {

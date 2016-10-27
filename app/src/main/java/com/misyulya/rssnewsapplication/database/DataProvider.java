@@ -47,7 +47,6 @@ public class DataProvider {
         List<RssItem> rssList = new ArrayList<>();
         RssItem rssItem = new RssItem();
         Cursor c = db.query(RssTable.TABLE_NAME, null, null, null, null, null, null);
-
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex(RssTable.ID);
             int titleColIndex = c.getColumnIndex(RssTable.TITLE);
@@ -60,8 +59,6 @@ public class DataProvider {
                 rssItem.setPosterURL(c.getString(posterUrlColIndex));
                 rssList.add(rssItem);
             } while (c.moveToNext());
-        } else {
-            Toast.makeText(mContext, "The dataBase is empty!", Toast.LENGTH_SHORT).show();
         }
         c.close();
         return rssList;
