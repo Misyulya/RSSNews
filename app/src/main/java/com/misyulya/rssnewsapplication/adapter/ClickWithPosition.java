@@ -1,6 +1,6 @@
-package com.misyulya.rssnewsapplication.adapters;
+package com.misyulya.rssnewsapplication.adapter;
 
-import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.model.RssItem;
 
 /**
  * Created by 1 on 08.06.2016.

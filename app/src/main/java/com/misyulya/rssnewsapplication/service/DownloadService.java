@@ -1,19 +1,8 @@
-package com.misyulya.rssnewsapplication.services;
+package com.misyulya.rssnewsapplication.service;
 
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Environment;
-import android.widget.Toast;
-
-import com.misyulya.rssnewsapplication.business.RssBusiness;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 /**
  * Created by 1 on 29.06.2016.

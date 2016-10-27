@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.database.tables.RssTable;
-import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.model.RssItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,8 +38,9 @@ public class DataProvider {
         }
     }
 
-    public void removeRss(RssItem rssItem) {
+    public int removeRss(RssItem rssItem) {
         int delCount = db.delete(RssTable.TABLE_NAME, RssTable.ID + " = " + rssItem.getId(), null);
+        return delCount;
     }
 
     public List<RssItem> getRss() {
@@ -50,11 +51,13 @@ public class DataProvider {
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex(RssTable.ID);
             int titleColIndex = c.getColumnIndex(RssTable.TITLE);
-            int descriptionColIndex = c.getColumnIndex(RssTable.DESCRIPTION);
+            int genreColIndex = c.getColumnIndex(RssTable.GENRE);
+            int posterUrlColIndex = c.getColumnIndex(RssTable.POSTER_URL);
             do {
                 rssItem.setId(c.getInt(idColIndex));
                 rssItem.setTitle(c.getString(titleColIndex));
-                rssItem.setLink(c.getString(descriptionColIndex));
+                rssItem.setGenre(c.getString(genreColIndex));
+                rssItem.setPosterURL(c.getString(posterUrlColIndex));
                 rssList.add(rssItem);
             } while (c.moveToNext());
         } else {

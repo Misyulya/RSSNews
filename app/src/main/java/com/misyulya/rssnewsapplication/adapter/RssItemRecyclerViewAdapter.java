@@ -1,4 +1,4 @@
-package com.misyulya.rssnewsapplication.adapters;
+package com.misyulya.rssnewsapplication.adapter;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -10,11 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.misyulya.rssnewsapplication.R;
-import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.model.RssItem;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,8 +27,8 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     private View mRssItem;
     private int mItemBackgroundColor = R.color.colorWhite;
 
-    public RssItemRecyclerViewAdapter(Collection<RssItem> rssItems, ClickWithPosition longClick) {
-        mRssItems = (List<RssItem>) rssItems;
+    public RssItemRecyclerViewAdapter(ClickWithPosition longClick) {
+        mRssItems = new ArrayList<>();
         mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
     }
@@ -43,13 +42,34 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         notifyItemChanged(pos);
     }
 
-    public void changeBackgroundItemColor(int itemBackgroundColor){
+    public void changeBackgroundItemColor(int itemBackgroundColor) {
         this.mItemBackgroundColor = itemBackgroundColor;
+    }
+
+    public void setRssItemList(List<RssItem> rssItemList) {
+        mRssItems.clear();
+        mRssItems.addAll(rssItemList);
+        notifyDataSetChanged();
     }
 
     public void clearSelections() {
         mSelectedItems.clear();
         notifyDataSetChanged();
+    }
+
+    public void deleteSelectedItems() {
+        List<Integer> selectedItems = getSelectedItems();
+        List<RssItem> removeItems = new ArrayList<>();
+        for (int i = 0, j = selectedItems.size() - 1; i < selectedItems.size(); i++) {
+            int position = selectedItems.get(i);
+            removeItems.add(mRssItems.get(position));
+        }
+        mRssItems.removeAll(removeItems);
+        for (int i = 0; i < selectedItems.size(); i++) {
+            int position = selectedItems.get(i);
+            notifyItemRemoved(position);
+        }
+        mSelectedItems.clear();
     }
 
     public int getSelectedItemCount() {
@@ -84,18 +104,17 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
-        private final TextView mTitleTextView;
-        private final TextView mLinkTextView;
-        private final ImageView mImage;
-        private final String IMAGE_URI = "http://pics04.loveplanet.ru/7/foto/63/27/63275bed/eCHNXDEIoHlMHaBZSCA==_.jpg?p=s_";
-
-        private final View mItemView;
+        private TextView mTitleTextView;
+        private TextView mGenreTextView;
+        private ImageView mImage;
+        private String mPosterUrl;
+        private View mItemView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mItemView = itemView;
             mTitleTextView = (TextView) itemView.findViewById(R.id.title_textView);
-            mLinkTextView = (TextView) itemView.findViewById(R.id.description_textView);
+            mGenreTextView = (TextView) itemView.findViewById(R.id.genre_textView);
             mImage = (ImageView) itemView.findViewById(R.id.image_view);
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
@@ -103,12 +122,12 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
         public void setContent(RssItem rssItem, boolean isSelected) {
             mTitleTextView.setText(rssItem.getTitle());
-            mLinkTextView.setText(rssItem.getLink());
-            ImageLoader.getInstance().displayImage(IMAGE_URI, mImage);
+            mGenreTextView.setText(rssItem.getGenre());
+            mPosterUrl = rssItem.getPosterURL();
+            ImageLoader.getInstance().displayImage(mPosterUrl, mImage);
             mItemView.setBackgroundColor(ContextCompat.getColor(mItemView.getContext(),
                     isSelected ? R.color.colorPrimary : mItemBackgroundColor));
         }
-
 
         @Override
         public boolean onLongClick(View v) {

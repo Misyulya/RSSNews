@@ -12,10 +12,10 @@
         android:padding="5dp">
 
         <ProgressBar
-            style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            style="@style/Base.Widget.AppCompat.ProgressBar"
             android:id="@+id/progress_bar"/>
 
         <android.support.v7.widget.RecyclerView

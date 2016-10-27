@@ -9,10 +9,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by 1 on 14.04.2016.
  */
 public class RestFactory {
-    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-// set your desired log level
-    logging.(HttpLoggingInterceptor.Level);
-    OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
     public static ApiInterface get(){
         Retrofit retrofit = new Retrofit.Builder()

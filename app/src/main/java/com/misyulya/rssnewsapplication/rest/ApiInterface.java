@@ -1,7 +1,7 @@
 package com.misyulya.rssnewsapplication.rest;
 
 
-import com.misyulya.rssnewsapplication.models.RssResponse;
+import com.misyulya.rssnewsapplication.model.RssResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

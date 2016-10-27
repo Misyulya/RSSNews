@@ -1,4 +1,4 @@
-package com.misyulya.rssnewsapplication.models;
+package com.misyulya.rssnewsapplication.model;
 
 import com.google.gson.annotations.SerializedName;
 

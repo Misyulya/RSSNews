@@ -13,17 +13,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".services.DownloadService"
+            android:name=".service.DownloadService"
             android:exported="false" />
 
-        <activity android:name=".activities.DashboardActivity">
+        <activity android:name=".activity.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.RssActivity" />
+        <activity android:name=".activity.RssActivity" />
     </application>
 
 </manifest>

@@ -3,23 +3,15 @@ package com.misyulya.rssnewsapplication.business;
 import android.content.Context;
 
 import com.misyulya.rssnewsapplication.database.DataProvider;
-import com.misyulya.rssnewsapplication.models.RssItem;
+import com.misyulya.rssnewsapplication.model.RssItem;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 /**
  * Created by 1 on 02.06.2016.
  */
 public class RssBusiness {
-    private final String RSS_API = "http://scripting.com/rss.json";
     private DataProvider mDataProvider;
-
 
     public RssBusiness(Context context) {
         this.mDataProvider = new DataProvider(context);
@@ -42,7 +34,7 @@ public class RssBusiness {
         return rssItemsList;
     }
 
-    public void setRss(List<RssItem> rssItems){
+    public void saveRssToDB(List<RssItem> rssItems){
         mDataProvider.setRss(rssItems);
     }
 

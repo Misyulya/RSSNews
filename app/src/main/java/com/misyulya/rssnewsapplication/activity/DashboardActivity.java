@@ -1,9 +1,6 @@
-package com.misyulya.rssnewsapplication.activities;
+package com.misyulya.rssnewsapplication.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,10 +9,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.R;
-import com.misyulya.rssnewsapplication.models.RssItem;
-import com.misyulya.rssnewsapplication.services.DownloadService;
-
-import java.util.ArrayList;
 
 public class DashboardActivity extends AppCompatActivity implements View.OnClickListener {
 
