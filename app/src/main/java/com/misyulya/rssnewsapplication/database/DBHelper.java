@@ -3,6 +3,8 @@ package com.misyulya.rssnewsapplication.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.misyulya.rssnewsapplication.app.App;
 import com.misyulya.rssnewsapplication.database.tables.RssTable;
 
 /**
@@ -10,12 +12,21 @@ import com.misyulya.rssnewsapplication.database.tables.RssTable;
  */
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "Rss_dataBase";
-    private static final int VERSION = 1;
+    private static DBHelper mDBHelper;
 
-    public DBHelper(Context context) {
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
+
+    public static DBHelper getInstance() {
+        if (mDBHelper == null) {
+            mDBHelper = new DBHelper(App.getContext());
+        }
+        return mDBHelper;
+    }
+
+    private static final String DATABASE_NAME = "Rss_dataBase";
+    private static final int VERSION = 1;
 
     @Override
     public void onCreate(SQLiteDatabase db) {

@@ -1,12 +1,11 @@
 package com.misyulya.rssnewsapplication.database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.database.tables.RssTable;
+import com.misyulya.rssnewsapplication.exeption.DbException;
 import com.misyulya.rssnewsapplication.model.RssItem;
 
 import java.util.ArrayList;
@@ -20,22 +19,22 @@ public class DataProvider {
 
     private DBHelper helper;
     private SQLiteDatabase db;
-    private Context mContext;
 
-    public DataProvider(Context context) {
-        mContext = context;
-        helper = new DBHelper(mContext);
+    public DataProvider() {
+        helper = DBHelper.getInstance();
         db = helper.getWritableDatabase();
     }
 
-    public void setRss(Collection<RssItem> rssItemList) {
+    public void setRss(Collection<RssItem> rssItemList) throws DbException {
         db.delete(RssTable.TABLE_NAME, null, null);
-        for (RssItem rss :
+        List<Long> result = new ArrayList<>();
+        for (RssItem item :
                 rssItemList) {
             ContentValues cv;
-            cv = RssTable.createContentValues(rss);
-            db.insert(RssTable.TABLE_NAME, null, cv);
+            cv = RssTable.createContentValues(item);
+           result.add(db.insert(RssTable.TABLE_NAME, null, cv));
         }
+      if (result.contains(-1))throw new DbException("Ошибка записи в БД");
     }
 
     public int removeRss(RssItem rssItem) {
@@ -45,7 +44,6 @@ public class DataProvider {
 
     public List<RssItem> getRss() {
         List<RssItem> rssList = new ArrayList<>();
-        RssItem rssItem = new RssItem();
         Cursor c = db.query(RssTable.TABLE_NAME, null, null, null, null, null, null);
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex(RssTable.ID);
@@ -53,6 +51,7 @@ public class DataProvider {
             int genreColIndex = c.getColumnIndex(RssTable.GENRE);
             int posterUrlColIndex = c.getColumnIndex(RssTable.POSTER_URL);
             do {
+                RssItem rssItem = new RssItem();
                 rssItem.setId(c.getInt(idColIndex));
                 rssItem.setTitle(c.getString(titleColIndex));
                 rssItem.setGenre(c.getString(genreColIndex));

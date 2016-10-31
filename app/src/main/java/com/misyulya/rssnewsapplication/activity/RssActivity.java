@@ -1,5 +1,6 @@
 package com.misyulya.rssnewsapplication.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,11 +24,12 @@ import com.misyulya.rssnewsapplication.R;
 import com.misyulya.rssnewsapplication.adapter.ClickWithPosition;
 import com.misyulya.rssnewsapplication.adapter.RssItemRecyclerViewAdapter;
 import com.misyulya.rssnewsapplication.business.RssBusiness;
+import com.misyulya.rssnewsapplication.exeption.DbException;
 import com.misyulya.rssnewsapplication.model.RssItem;
 import com.misyulya.rssnewsapplication.model.RssResponse;
-import com.misyulya.rssnewsapplication.rest.RestFactory;
 import com.misyulya.rssnewsapplication.service.DownloadService;
 
+import java.net.ConnectException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -47,7 +49,6 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     private ActionMode mActionMode;
     private RssBusiness mRssBusiness;
 
-
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
@@ -55,21 +56,21 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 if (intent.getAction() == DownloadService.NOTIFICATION_START) {
-                    String message = bundle.getString(DownloadService.MESSAGE);
-                    Toast.makeText(RssActivity.this, "Сервис запущен", Toast.LENGTH_SHORT).show();
                     mProgressBar.setVisibility(View.VISIBLE);
+                    String message = bundle.getString(DownloadService.MESSAGE);
+                    Toast.makeText(RssActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else if (intent.getAction() == DownloadService.NOTIFICATION_END) {
-                    String string = bundle.getString(DownloadService.FILEPATH);
-                    int resultCode = bundle.getInt(DownloadService.RESULT);
-                    if (resultCode == RESULT_OK) {
-                        Toast.makeText(RssActivity.this,
-                                "Download complete. Download URI: " + string,
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(RssActivity.this, "Download failed",
-                                Toast.LENGTH_SHORT).show();
+                    String message = null;
+                    switch (intent.getIntExtra(DownloadService.RESULT, 0)) {
+                        case Activity.RESULT_OK:
+                            message = intent.getStringExtra(DownloadService.MESSAGE);
+                            updateInformation();
+                            break;
+                        case Activity.RESULT_CANCELED:
+                            message = intent.getStringExtra(DownloadService.ERROR);
                     }
-                    mProgressBar.setVisibility(View.GONE);
+                            Toast.makeText(RssActivity.this, message, Toast.LENGTH_SHORT).show();
+                            mProgressBar.setVisibility(View.GONE);
                 }
             }
         }
@@ -116,7 +117,7 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.rss_activity);
         initView();
         initToolbar(mToolbar);
-        mRssBusiness = new RssBusiness(this);
+        mRssBusiness = new RssBusiness();
         updateInformation();
     }
 
@@ -124,8 +125,9 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mProgressBar.setVisibility(View.INVISIBLE);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new RssItemRecyclerViewAdapter(this, this);
+        mAdapter = new RssItemRecyclerViewAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -138,9 +140,8 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-//        TODO Rebuild service
-//        Intent intent = new Intent(this, DownloadService.class);
-//        startService(intent);
+        Intent intent = new Intent(this, DownloadService.class);
+        startService(intent);
     }
 
     @Override
@@ -165,21 +166,27 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     public void updateInformation() {
+        mProgressBar.setVisibility(View.VISIBLE);
         List<RssItem> rssItems = mRssBusiness.getRss();
         if (rssItems.isEmpty()) {
             mRssBusiness.requestRss(new Callback<RssResponse>() {
                 @Override
                 public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
-                    List<RssItem> rssItems = response.body().getRssData();
-                    mAdapter.setRssItemList(rssItems);
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                    mAdapter.setRssItemList(mRssBusiness.getRss());
                 }
 
                 @Override
                 public void onFailure(Call<RssResponse> call, Throwable t) {
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                    if (t instanceof DbException) {
+                        Toast.makeText(RssActivity.this, "Ошибка записи в БД", Toast.LENGTH_SHORT).show();
+                        RssActivity.this.finish();
+                    }
                 }
             });
         } else {
-//            TODO Problems with the Threads
+//            TODO Fix problems with the threads
             mAdapter.setRssItemList(rssItems);
         }
     }
@@ -196,4 +203,5 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         super.onPause();
         unregisterReceiver(mReceiver);
     }
+
 }

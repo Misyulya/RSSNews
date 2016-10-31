@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.misyulya.rssnewsapplication.R;
+import com.misyulya.rssnewsapplication.database.DBHelper;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -18,11 +19,17 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  */
 public class App extends Application {
 
+    private static App instance;
+
     @Override
     public void onCreate() {
         super.onCreate();
         initializeImageLoader(this);
+        instance = this;
     }
+
+    public static App getContext() { return instance; }
+
     private void initializeImageLoader(Context context) {
         ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(context);
         DisplayImageOptions options =

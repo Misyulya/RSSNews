@@ -30,11 +30,11 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     private int mItemBackgroundColor = R.color.colorWhite;
     private RssBusiness mRssBusiness;
 
-    public RssItemRecyclerViewAdapter(Context context, ClickWithPosition longClick) {
+    public RssItemRecyclerViewAdapter(ClickWithPosition longClick) {
         mRssItems = new ArrayList<>();
         mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
-        mRssBusiness = new RssBusiness(context);
+        mRssBusiness = new RssBusiness();
     }
 
     public void toggleSelection(int pos) {
@@ -64,7 +64,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     public void deleteSelectedItems() {
         List<Integer> selectedItems = getSelectedItems();
         List<RssItem> removeItems = new ArrayList<>();
-        for (int i = 0, j = selectedItems.size() - 1; i < selectedItems.size(); i++) {
+        for (int i = 0; i < selectedItems.size(); i++) {
             int position = selectedItems.get(i);
             RssItem item = mRssItems.get(position);
             removeItems.add(item);

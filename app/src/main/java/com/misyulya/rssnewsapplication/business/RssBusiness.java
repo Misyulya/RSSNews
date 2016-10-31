@@ -1,8 +1,10 @@
 package com.misyulya.rssnewsapplication.business;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.database.DataProvider;
+import com.misyulya.rssnewsapplication.exeption.DbException;
 import com.misyulya.rssnewsapplication.model.RssItem;
 import com.misyulya.rssnewsapplication.model.RssResponse;
 import com.misyulya.rssnewsapplication.rest.RestFactory;
@@ -18,8 +20,9 @@ import retrofit2.Response;
  */
 public class RssBusiness {
     private DataProvider mDataProvider;
-    public RssBusiness(Context context) {
-        this.mDataProvider = new DataProvider(context);
+
+    public RssBusiness() {
+        this.mDataProvider = new DataProvider();
     }
 
     public List<RssItem> getRss() {
@@ -43,38 +46,29 @@ public class RssBusiness {
         RestFactory.get().getRSS().enqueue(new Callback<RssResponse>() {
             @Override
             public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
-                // inserting data to db
-                // etc ...
                 List<RssItem> rssItems;
                 rssItems = response.body().getRssData();
-                mDataProvider.setRss(rssItems);
-                callback.onResponse(call, response);
+                try {
+                    mDataProvider.setRss(rssItems);
+                } catch (DbException e) {
+                    callback.onFailure(call, e);
+                }
+                callback.onResponse(call,response);
             }
 
-            @Override
-            public void onFailure(Call<RssResponse> call, Throwable t) {
-                callback.onFailure(call, t);
-            }
-        });
+        @Override
+        public void onFailure (Call < RssResponse > call, Throwable t){
+            callback.onFailure(call, t);
+        }
     }
+    );}
 
-    public void saveRssToDB(List<RssItem> rssItems){
+    public void saveRssToDB(List<RssItem> rssItems) throws DbException{
         mDataProvider.setRss(rssItems);
     }
 
     public void delete(RssItem item) {
         mDataProvider.removeRss(item);
     }
-
-//    public String getRssResponseString() throws IOException {
-//        OkHttpClient client = new OkHttpClient();
-//        Request request = new Request.Builder()
-//                .url(RSS_API)
-//                .build();
-//
-//        String responseJson = client.newCall(request).execute().body().toString();
-//        return responseJson;
-//
-//    }
 
 }

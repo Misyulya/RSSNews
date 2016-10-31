@@ -43,7 +43,6 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rssButton:
-                Toast.makeText(this, "Rss button pressed", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, RssActivity.class);
                 startActivity(intent);
                 break;
