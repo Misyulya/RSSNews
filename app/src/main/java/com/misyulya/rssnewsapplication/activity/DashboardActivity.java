@@ -4,11 +4,17 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.misyulya.rssnewsapplication.R;
+import com.misyulya.rssnewsapplication.business.RssBusiness;
+import com.misyulya.rssnewsapplication.model.RssItem;
+
+import java.io.File;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -16,8 +22,7 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
     private Button mBackupButton;
     private Button mRestoreButton;
     private Button mExitButton;
-    private Button mRefreshButton;
-    private Toolbar mToolbar;
+    private RssBusiness mRssBusiness;
 
 
     @Override
@@ -25,6 +30,7 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         initView();
+        mRssBusiness = new RssBusiness();
     }
 
 
@@ -47,29 +53,25 @@ public class DashboardActivity extends AppCompatActivity implements View.OnClick
                 startActivity(intent);
                 break;
             case R.id.backupButton:
-                Toast.makeText(this, "Backup button pressed", Toast.LENGTH_SHORT).show();
+                if (RssBusiness.isExternalStorageWritable()) {
+                    List rssItem = mRssBusiness.getRss();
+                    String json = mRssBusiness.serializeToJson(rssItem);
+                    RssBusiness.writeToFile(json);
+                    Toast.makeText(this, "Data from DB successfully serialized to JSON", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.restoreButton:
-                Toast.makeText(this, "Restore button pressed", Toast.LENGTH_SHORT).show();
+                if (RssBusiness.isExternalStorageReadable()) {
+                    String json = RssBusiness.readFromFile();
+                    Log.d("myLog", json);
+                    List<RssItem> list = RssBusiness.getRssListFromJsonFile(json);
+                    Toast.makeText(this, "Data from rss.json successfully deserialized" , Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.exitButton:
                 onBackPressed();
                 break;
         }
     }
-
-//    private void prepareData() {
-//        mRssItems = new ArrayList<>();
-//        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
-//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-//        mRssItems.add(new RssItem("First chanel", "the best TV chanel"));
-//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-//        mRssItems.add(new RssItem("Second chanel", "Russian TV chanel"));
-//        mRssItems.add(new RssItem("Cultural chanel", "Interesting TV chanel"));
-//    }
 
 }

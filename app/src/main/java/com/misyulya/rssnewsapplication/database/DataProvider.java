@@ -62,14 +62,4 @@ public class DataProvider {
         c.close();
         return rssList;
     }
-
-//    public boolean saveDataToDB(Rss rss) {
-//
-//        boolean result = true;
-//        if (db.insert(RssTable.TABLE_NAME, null, RssTable.createContentValues(rss)) == -1) {
-//            result = false;
-//        }
-//        return result;
-//    }
-
 }
