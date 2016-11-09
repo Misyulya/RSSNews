@@ -3,6 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+
+        <item name="android:buttonStyle">@style/button</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -14,18 +16,25 @@
         <item name="android:layout_width">150dp</item>
         <item name="android:layout_height">150dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@android:color/holo_blue_dark</item>
         <item name="android:textSize">25sp</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:layout_margin">7dp</item>
-
     </style>
 
     <style name="ItemTextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
         <item name="android:textSize">16sp</item>
+    </style>
 
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:shadowColor">#FF000000</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:background">@drawable/button</item>
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">150dp</item>
+        <item name="android:layout_margin">7dp</item>
     </style>
 
 </resources>

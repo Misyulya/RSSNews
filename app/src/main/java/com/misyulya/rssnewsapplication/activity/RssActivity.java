@@ -5,6 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -24,17 +27,13 @@ import com.misyulya.rssnewsapplication.R;
 import com.misyulya.rssnewsapplication.adapter.ClickWithPosition;
 import com.misyulya.rssnewsapplication.adapter.RssItemRecyclerViewAdapter;
 import com.misyulya.rssnewsapplication.business.RssBusiness;
+import com.misyulya.rssnewsapplication.dialog.OkDialog;
 import com.misyulya.rssnewsapplication.exeption.DbException;
 import com.misyulya.rssnewsapplication.model.RssItem;
-import com.misyulya.rssnewsapplication.model.RssResponse;
 import com.misyulya.rssnewsapplication.service.DownloadService;
 
-import java.net.ConnectException;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created by 1 on 30.05.2016.
@@ -42,12 +41,11 @@ import retrofit2.Response;
 public class RssActivity extends AppCompatActivity implements View.OnClickListener, ClickWithPosition {
 
     private ProgressBar mProgressBar;
-    private RecyclerView mRecyclerView;
     private RssItemRecyclerViewAdapter mAdapter;
-    private Button mRefreshButton;
     private Toolbar mToolbar;
     private ActionMode mActionMode;
     private RssBusiness mRssBusiness;
+
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
@@ -55,26 +53,43 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
+                String message = bundle.getString(DownloadService.MESSAGE);
                 if (intent.getAction() == DownloadService.NOTIFICATION_START) {
                     mProgressBar.setVisibility(View.VISIBLE);
-                    String message = bundle.getString(DownloadService.MESSAGE);
                     Toast.makeText(RssActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else if (intent.getAction() == DownloadService.NOTIFICATION_END) {
-                    String message = null;
                     switch (intent.getIntExtra(DownloadService.RESULT, 0)) {
                         case Activity.RESULT_OK:
-                            message = intent.getStringExtra(DownloadService.MESSAGE);
-                            updateInformation();
+                            new ReadDataFromDb().execute();
+                            Toast.makeText(RssActivity.this, message, Toast.LENGTH_SHORT).show();
                             break;
                         case Activity.RESULT_CANCELED:
-                            message = intent.getStringExtra(DownloadService.ERROR);
+                            showDialog(message);
                     }
-                            Toast.makeText(RssActivity.this, message, Toast.LENGTH_SHORT).show();
-                            mProgressBar.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         }
     };
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.rss_activity);
+        initView();
+        initToolbar(mToolbar);
+        mRssBusiness = new RssBusiness();
+        mProgressBar.setVisibility(View.VISIBLE);
+        new ReadDataFromDb().execute();
+    }
+
+    private void showDialog(String message) {
+        Bundle bundle = new Bundle();
+        bundle.putString(OkDialog.MESSAGE_FOR_DIALOG, message);
+        OkDialog dialog = new OkDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "OkDialog");
+    }
 
     private android.view.ActionMode.Callback mCallback = new ActionMode.Callback() {
         @Override
@@ -96,7 +111,6 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
             switch (item.getItemId()) {
                 case R.id.delete_button:
                     mAdapter.deleteSelectedItems();
-                    mActionMode.finish();
                     return true;
                 default:
                     return false;
@@ -111,21 +125,12 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         }
     };
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.rss_activity);
-        initView();
-        initToolbar(mToolbar);
-        mRssBusiness = new RssBusiness();
-        updateInformation();
-    }
 
     private void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new RssItemRecyclerViewAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
@@ -134,7 +139,7 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     private void initToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        mRefreshButton = (Button) toolbar.findViewById(R.id.refresh_button);
+        Button mRefreshButton = (Button) toolbar.findViewById(R.id.refresh_button);
         mRefreshButton.setOnClickListener(this);
     }
 
@@ -165,30 +170,9 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-    public void updateInformation() {
-        mProgressBar.setVisibility(View.VISIBLE);
-        List<RssItem> rssItems = mRssBusiness.getRss();
-        if (rssItems.isEmpty()) {
-            mRssBusiness.requestRss(new Callback<RssResponse>() {
-                @Override
-                public void onResponse(Call<RssResponse> call, Response<RssResponse> response) {
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                    mAdapter.setRssItemList(mRssBusiness.getRss());
-                }
-
-                @Override
-                public void onFailure(Call<RssResponse> call, Throwable t) {
-                    mProgressBar.setVisibility(View.INVISIBLE);
-                    if (t instanceof DbException) {
-                        Toast.makeText(RssActivity.this, "Ошибка записи в БД", Toast.LENGTH_SHORT).show();
-                        RssActivity.this.finish();
-                    }
-                }
-            });
-        } else {
-//            TODO Fix problems with the threads
-            mAdapter.setRssItemList(rssItems);
-        }
+    @Override
+    public void finishActionModeAfterDeleteOperation() {
+        mActionMode.finish();
     }
 
     @Override
@@ -202,6 +186,43 @@ public class RssActivity extends AppCompatActivity implements View.OnClickListen
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mReceiver);
+    }
+
+    private class ReadDataFromDb extends AsyncTask<Void, Void, Collection<RssItem>> {
+        @Override
+        protected Collection<RssItem> doInBackground(Void... params) {
+            Collection<RssItem> rssItems = mRssBusiness.getRss();
+            if (rssItems.isEmpty()) {
+                if (isNetworkAvailable()) {
+                    try {
+                        rssItems = mRssBusiness.requestRss();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (DbException e) {
+                        e.printStackTrace();
+                    }
+                } else return null;
+            }
+            return rssItems;
+        }
+
+        @Override
+        protected void onPostExecute(Collection<RssItem> rssItems) {
+            super.onPostExecute(rssItems);
+            if (!rssItems.isEmpty()) {
+                mAdapter.setRssItemList(rssItems);
+            } else {
+                showDialog("Нужен интернет");
+            }
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

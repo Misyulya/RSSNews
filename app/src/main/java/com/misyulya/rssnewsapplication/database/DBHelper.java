@@ -13,20 +13,21 @@ import com.misyulya.rssnewsapplication.database.tables.RssTable;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper mDBHelper;
+    private final Object mLock1 = new Object();
+    private final Object mLock2 = new Object();
+    private static final String DATABASE_NAME = "Rss_dataBase";
+    private static final int VERSION = 1;
 
     private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
 
-    public static DBHelper getInstance() {
-        if (mDBHelper == null) {
-            mDBHelper = new DBHelper(App.getContext());
-        }
+    public  static DBHelper getInstance() {
+            if (mDBHelper == null) {
+                mDBHelper = new DBHelper(App.getContext());
+            }
         return mDBHelper;
     }
-
-    private static final String DATABASE_NAME = "Rss_dataBase";
-    private static final int VERSION = 1;
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -35,7 +36,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        RssTable.deleteTable(db);
-        onCreate(db);
+        synchronized(this) {
+            RssTable.deleteTable(db);
+            onCreate(db);
+        }
     }
 }

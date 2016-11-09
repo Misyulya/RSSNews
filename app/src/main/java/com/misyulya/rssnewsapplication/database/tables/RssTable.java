@@ -10,22 +10,19 @@ import com.misyulya.rssnewsapplication.model.RssItem;
  */
 public class RssTable {
     public static final String TABLE_NAME = "RssItemTable";
-    public static final String TEXT_TYPE = " text";
-
     public static final String ID = "_id";
     public static final String TITLE = "title";
     public static final String GENRE = "genre";
     public static final String POSTER_URL = "poster";
+    private static final String TEXT_TYPE = " text";
     private static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     private static final String CREATE_TABLE = "create table " + TABLE_NAME + "(" + ID + " integer primary " +
             "key autoincrement, " + TITLE + TEXT_TYPE + ", " + GENRE + TEXT_TYPE + ", " + POSTER_URL + TEXT_TYPE + ");";
 
-
     public static void createDataBase(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
     }
-
 
     public static void deleteTable(SQLiteDatabase db) {
         db.execSQL(DELETE_TABLE);
@@ -38,5 +35,4 @@ public class RssTable {
         cv.put(POSTER_URL, rss.getPosterURL());
         return cv;
     }
-
 }

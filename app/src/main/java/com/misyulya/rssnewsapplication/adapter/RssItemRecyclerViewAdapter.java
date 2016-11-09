@@ -1,6 +1,7 @@
 package com.misyulya.rssnewsapplication.adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -16,6 +17,7 @@ import com.misyulya.rssnewsapplication.model.RssItem;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,15 +28,16 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     private final ClickWithPosition mClickWithPosition;
     private List<RssItem> mRssItems;
     private SparseBooleanArray mSelectedItems;
-    private View mRssItem;
     private int mItemBackgroundColor = R.color.colorWhite;
     private RssBusiness mRssBusiness;
+    private List<RssItem> mRemoveItems;
 
     public RssItemRecyclerViewAdapter(ClickWithPosition longClick) {
         mRssItems = new ArrayList<>();
         mClickWithPosition = longClick;
         mSelectedItems = new SparseBooleanArray();
         mRssBusiness = new RssBusiness();
+        mRemoveItems = new ArrayList<>();
     }
 
     public void toggleSelection(int pos) {
@@ -50,7 +53,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
         this.mItemBackgroundColor = itemBackgroundColor;
     }
 
-    public void setRssItemList(List<RssItem> rssItemList) {
+    public void setRssItemList(Collection<RssItem> rssItemList) {
         mRssItems.clear();
         mRssItems.addAll(rssItemList);
         notifyDataSetChanged();
@@ -63,19 +66,12 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
     public void deleteSelectedItems() {
         List<Integer> selectedItems = getSelectedItems();
-        List<RssItem> removeItems = new ArrayList<>();
         for (int i = 0; i < selectedItems.size(); i++) {
             int position = selectedItems.get(i);
             RssItem item = mRssItems.get(position);
-            removeItems.add(item);
-            mRssBusiness.delete(item);
+            mRemoveItems.add(item);
         }
-        mRssItems.removeAll(removeItems);
-        for (int i = 0; i < selectedItems.size(); i++) {
-            int position = selectedItems.get(i);
-            notifyItemRemoved(position);
-        }
-        mSelectedItems.clear();
+        new DeleteFromDb().execute();
     }
 
     public int getSelectedItemCount() {
@@ -93,7 +89,7 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        mRssItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
+        View mRssItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
         ViewHolder holder = new ViewHolder(mRssItem);
         return holder;
     }
@@ -102,6 +98,31 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
     public void onBindViewHolder(ViewHolder holder, int position) {
         RssItem rssItem = mRssItems.get(position);
         holder.setContent(rssItem, mSelectedItems.get(position));
+    }
+
+    private class DeleteFromDb extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            for (int i = 0; i < mRemoveItems.size(); i++) {
+                if (mRssBusiness.delete(mRemoveItems.get(i)) == 0) return "Ошибка удаления из БД";
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null) {
+                mRssItems.removeAll(mRemoveItems);
+                for (int i = 0; i < getSelectedItems().size(); i++) {
+                    int position = getSelectedItems().get(i);
+                    notifyItemRemoved(position);
+                }
+                mRemoveItems.clear();
+            }
+            mClickWithPosition.finishActionModeAfterDeleteOperation();
+        }
     }
 
     @Override
@@ -146,4 +167,5 @@ public class RssItemRecyclerViewAdapter extends RecyclerView.Adapter<RssItemRecy
             mClickWithPosition.onClickWithPosition(mRssItems.get(getLayoutPosition()), getLayoutPosition());
         }
     }
+
 }

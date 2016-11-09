@@ -20,7 +20,6 @@ public class RssItem implements Serializable {
 
     private transient int mId;
 
-
     public void setTitle(String title) {
         this.mTitle = title;
     }
@@ -37,12 +36,12 @@ public class RssItem implements Serializable {
         return mGenre;
     }
 
-    public String getPosterURL() {
-        return mPosterURL;
-    }
-
     public void setPosterURL(String posterURL) {
         this.mPosterURL = posterURL;
+    }
+
+    public String getPosterURL() {
+        return mPosterURL;
     }
 
     public void setId(int id) {

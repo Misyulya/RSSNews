@@ -17,11 +17,10 @@ import java.util.List;
  */
 public class DataProvider {
 
-    private DBHelper helper;
     private SQLiteDatabase db;
 
     public DataProvider() {
-        helper = DBHelper.getInstance();
+        DBHelper helper = DBHelper.getInstance();
         db = helper.getWritableDatabase();
     }
 
@@ -42,8 +41,8 @@ public class DataProvider {
         return delCount;
     }
 
-    public List<RssItem> getRss() {
-        List<RssItem> rssList = new ArrayList<>();
+    public Collection<RssItem> getRss() {
+        Collection<RssItem> rssItemCollection = new ArrayList<>();
         Cursor c = db.query(RssTable.TABLE_NAME, null, null, null, null, null, null);
         if (c.moveToFirst()) {
             int idColIndex = c.getColumnIndex(RssTable.ID);
@@ -56,10 +55,10 @@ public class DataProvider {
                 rssItem.setTitle(c.getString(titleColIndex));
                 rssItem.setGenre(c.getString(genreColIndex));
                 rssItem.setPosterURL(c.getString(posterUrlColIndex));
-                rssList.add(rssItem);
+                rssItemCollection.add(rssItem);
             } while (c.moveToNext());
         }
         c.close();
-        return rssList;
+        return rssItemCollection;
     }
 }

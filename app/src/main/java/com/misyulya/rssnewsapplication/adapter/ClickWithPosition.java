@@ -8,4 +8,5 @@ import com.misyulya.rssnewsapplication.model.RssItem;
 public interface ClickWithPosition {
     void onLongClickWithPosition(RssItem item, int itemPosition);
     void onClickWithPosition(RssItem item, int itemPosition);
+    void finishActionModeAfterDeleteOperation();
 }
