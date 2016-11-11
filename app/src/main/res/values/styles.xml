@@ -23,8 +23,9 @@
 
     <style name="ItemTextView">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">50dp</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="button" parent="@android:style/Widget.Button">

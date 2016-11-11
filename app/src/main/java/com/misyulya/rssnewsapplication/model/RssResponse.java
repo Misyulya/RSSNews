@@ -9,19 +9,10 @@ import java.util.List;
  */
 public class RssResponse {
 
-    @SerializedName("filmsData")
+    @SerializedName("articles")
     private List<RssItem> rssItems;
 
     public List<RssItem> getRssData() {
-        for (RssItem item : rssItems) {
-            String posterUrl = item.getPosterURL();
-            if (posterUrl != null) {
-                String start = posterUrl.substring(0, 18);
-                String end = "360" + posterUrl.substring(18);
-                String trueUrl = "https://st.kinopoisk.ru/images/" + start + end;
-                item.setPosterURL(trueUrl);
-            }
-        }
         return rssItems;
     }
 }

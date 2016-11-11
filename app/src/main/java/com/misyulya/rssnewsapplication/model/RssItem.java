@@ -9,13 +9,13 @@ import java.io.Serializable;
  */
 public class RssItem implements Serializable {
 
-    @SerializedName("nameRU")
+    @SerializedName("author")
     private String mTitle;
 
-    @SerializedName("genre")
+    @SerializedName("title")
     private String mGenre;
 
-    @SerializedName("posterURL")
+    @SerializedName("urlToImage")
     private String mPosterURL;
 
     private transient int mId;
