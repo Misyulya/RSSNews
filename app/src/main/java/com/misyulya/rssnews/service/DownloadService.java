@@ -31,7 +31,7 @@ public class DownloadService extends IntentService {
         try {
             new RssBusiness().requestRss();
             successfulWriting(sendingIntent);
-        } catch (IOException e) {
+        } catch (IOException e) { //AL_DM Join exceptions in to one catch block like this catch(IOException | DbException e)
             message = e.getMessage();
         } catch (DbException e) {
             message = e.getMessage();

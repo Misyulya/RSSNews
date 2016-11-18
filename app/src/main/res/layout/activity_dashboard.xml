@@ -17,25 +17,25 @@
         tools:context=".activity.DashboardActivity">
 
 
-        <com.misyulya.rssnewsapplication.customview.MyButton
+        <com.misyulya.rssnews.customview.MyButton
             android:id="@+id/rssButton"
             style="@style/button"
             android:layout_alignParentStart="true"
             android:text="@string/rss_button" />
 
-        <com.misyulya.rssnewsapplication.customview.MyButton
+        <com.misyulya.rssnews.customview.MyButton
             android:id="@+id/backupButton"
             style="@style/button"
             android:layout_toRightOf="@+id/rssButton"
             android:text="@string/backup_button" />
 
-        <com.misyulya.rssnewsapplication.customview.MyButton
+        <com.misyulya.rssnews.customview.MyButton
             android:id="@+id/restoreButton"
             style="@style/button"
             android:layout_below="@+id/rssButton"
             android:text="@string/restore_button" />
 
-        <com.misyulya.rssnewsapplication.customview.MyButton
+        <com.misyulya.rssnews.customview.MyButton
             android:id="@+id/exitButton"
             style="@style/button"
             android:layout_below="@+id/backupButton"
